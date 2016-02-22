@@ -1,0 +1,89 @@
+<?php Pjax::begin([
+			'id' => 'pjax-id',
+			'timeout'=>false,
+			'enablePushState' => false
+		]);?>
+
+		<?=
+		GridView::widget([
+			'id' => 'grid-id',
+			'dataProvider' => $dataProvider,
+			'filterModel' => $searchModel,
+			'panel' => [
+				'heading' => '<div class="pull-left"><h5><i class="fa fa-bullhorn"></i> ' . $this->title . '</h5></div>' .
+				'<div class="pull-right">' .
+				Html::a('<i class="glyphicon glyphicon-repeat"></i>', ['presentationoral'], ['data-pjax' => 0, 'class' => 'btn btn-default', 'title' => 'ล้างข้อมูล', 'data-toggle' => 'tooltip']) .
+				'{toggleData}</div>',
+				'type' => GridView::TYPE_PRIMARY,
+			],
+			'toolbar' => '<small>{summary}</small>',
+			'bordered' => false,
+    		'striped' => true,
+    		'condensed' => true,
+    		'responsive' => true,
+    		'hover' => true,
+    		'floatHeader' => true,
+    		'resizableColumns' => true,
+			'columns' => [
+				[
+					'headerOptions' => ['class' => 'text-center', 'style' => 'width: 10px;'],
+					'class' => 'yii\grid\SerialColumn'
+				],
+				[
+					'label' => 'รายละเอียดบทความ',
+					'attribute' => 'conf_name_th',
+					'format' => 'raw',
+					'value' => function ($model) {
+
+						if ($model->conf_status === 'ส่งบทความ' || $model->conf_status === 'ปรับปรุงแก้ไข') {
+							$textcfst = 'บทความอยู่ที่นักวิจัย รอการยืนยันการส่งจากนักวิจัย';
+							$scolor = '#ffae00';
+						} else if ($model->conf_status === 'รอผลการพิจารณา') {
+							$textcfst = 'อยู่ระหว่าง รอผลการพิจารณาจากคณะกรรมการ';
+							$scolor = '#191970';
+						} else if ($model->conf_status === 'ผ่านการพิจารณา') {
+							$textcfst = 'บทความวิจัย ผ่านการพิจารณา';
+							$scolor = '#006400';
+						} else {
+							$textcfst = '';
+							$scolor = '';
+						}
+
+						$listconfname = '<div class="input-group"><i class="glyphicon glyphicon-list-alt"></i> &nbsp ' . $model->conf_name_th . '</div>';
+						$listconfname.= '<div class="input-group"><i class="glyphicon glyphicon-list-alt"></i> &nbsp ' . $model->conf_name_en . '</div>';
+						$listconfname.= '<div class="input-group"><i class="glyphicon glyphicon-user"></i> &nbsp ' . $model->user_name . Confauthor::findautall($model->id) . '</div>';
+						$listconfname.= '<div class="input-group"><i class="glyphicon glyphicon-home"></i> &nbsp ' . $model->user_faculty . '  ' . $model->user_university . '</div>';
+						$listconfname.= '<div class="input-group"><i class="glyphicon glyphicon-cog"></i> &nbsp <span class="label" style="background-color: ' . $scolor . '; color: #ffffff;"> ' . $textcfst . '</span></div>';
+
+						return $listconfname;
+					},
+				],
+				[
+					'attribute' => 'conf_branch_id',
+					'value' => 'confBranch.conf_branch_name',
+					'headerOptions' => ['class' => 'text-center', 'style' => 'width: 200px;'],
+					'filter' => \backend\models\Confbranch::getCbrlist()
+				]
+			],
+		]);
+		?>
+
+		<?php Pjax::end();?>
+
+		<?php $this->registerJs('
+			var input;
+			var filter_selector = \'#grid-id-filters input\';
+
+			$(document)
+			.off(\'keydown.yiiGridView change.yiiGridView\', filter_selector)
+			.on(\'keyup\', filter_selector, function() {
+			    input = $(this).attr(\'name\');
+			    $("#grid-id").yiiGridView("applyFilter");
+			})
+			.on(\'pjax:success\', function() {
+			    var i = $("[name=\'"+input+"\']");
+			    var val = i.val();
+			    i.focus().val(val);
+			});',
+        yii\web\View::POS_READY);
+        ?>
