@@ -22,7 +22,7 @@
     		'condensed' => true,
     		'responsive' => true,
     		'hover' => true,
-    		'floatHeader' => true,
+    		//'floatHeader' => true,
     		'resizableColumns' => true,
 			'columns' => [
 				[
@@ -72,18 +72,37 @@
 
 		<?php $this->registerJs('
 			var input;
-			var filter_selector = \'#grid-id-filters input\';
+			var filter_selector = \'#oralinad_grid_id-filters input\';
+			var delayID=null;
 
 			$(document)
 			.off(\'keydown.yiiGridView change.yiiGridView\', filter_selector)
+
 			.on(\'keyup\', filter_selector, function() {
 			    input = $(this).attr(\'name\');
-			    $("#grid-id").yiiGridView("applyFilter");
+			    //หน่วงเวลาในการพิมพ์
+			    if(delayID==null){  
+		            	delayID=setTimeout(function(){  
+			   		$("#oralinad_grid_id").yiiGridView("applyFilter"); 
+		                delayID=null;  
+		            	},1000);                              
+		            }else{  
+		            	if(delayID){  
+		                	clearTimeout(delayID);  
+		                	delayID=setTimeout(function(){  
+			      			$("#oralinad_grid_id").yiiGridView("applyFilter");  
+		                    	delayID=null;  
+		                	},1000);                          
+		            	}         
+		            }//หน่วงเวลาในการพิมพ์
 			})
+		
 			.on(\'pjax:success\', function() {
 			    var i = $("[name=\'"+input+"\']");
-			    var val = i.val();
-			    i.focus().val(val);
+			    var strLength= i.val().length;
+			    i.focus();
+			    i[0].setSelectionRange(strLength, strLength); //เซ็ตโฟกัสที่ท้ายสุดของข้อความ
+
 			});',
-        yii\web\View::POS_READY);
+        View::POS_READY);
         ?>
