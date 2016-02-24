@@ -1,0 +1,5 @@
+ใครยังอัพเดท composer แล้ว error ให้ลอง
+ลบอันเดิมออก
+composer global remove "fxp/composer-asset-plugin"
+ติดตั้งใหม่
+composer global require "fxp/composer-asset-plugin:~1.1.1"
