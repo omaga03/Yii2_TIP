@@ -1,0 +1,22 @@
+// แสดงตัวอย่างไฟล์ เมนูการอัพโหลดไฟล์ ขั้นตอนการ actionUpdate
+// _form.php
+<?=
+        $form->field($model, 'filespdf_full')
+        ->widget(FileInput::classname(), [
+            'options' => ['id' => 'rf_filespdf'],
+            'pluginOptions' => [
+                'minFileCount' => $model->isNewRecord ? 1 : false,
+                'showCaption' => false,
+                'showUpload' => false,
+                'showRemove' => false,
+                'browseClass' => 'btn btn-primary btn-block',
+                'browseIcon' => '<i class="glyphicon glyphicon-paperclip"></i> ',
+                'browseLabel' => 'เลือกไฟล์เอกสาร .pdf',
+          ***   'initialPreview' => !$model->isNewRecord ? [Yii::getAlias('@datafiles') . '/' .$model->pro_id . '/' . $model->rf_files,] : false,
+          ***   'initialPreviewAsData' => !$model->isNewRecord ? true : false,
+          ***   'initialPreviewConfig' => !$model->isNewRecord ? [
+          ***      ['type' => "pdf",  'size' => '8000', 'caption' => $model->rf_filesname, /*'url' => $urlD,*/ 'key' => 14, ]
+          ***   ] : false,
+            ],
+]);
+?>
